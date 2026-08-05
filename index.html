@@ -54,6 +54,17 @@
 </style>
 </head>
 <body>
+<script>
+  // Supabase auth redirects fall back to the Site URL (this page) in some
+  // error paths; recovery fragments belong on reset.html where they get a
+  // proper explanation / app handoff instead of a silent landing page.
+  (function () {
+    var h = location.hash || '';
+    if (h.indexOf('error') !== -1 || (h.indexOf('access_token') !== -1 && h.indexOf('type=recovery') !== -1)) {
+      location.replace('reset.html' + h);
+    }
+  })();
+</script>
 <main>
   <h1>PipTCG</h1>
   <p class="tagline">Buy, sell, and trade physical trading cards with collectors near you.</p>
