@@ -89,35 +89,46 @@
 <footer>PipTCG &middot; <a href="support.html">Support</a></footer>
 <script>
 (function () {
-  // Supabase's implicit-flow recovery redirect puts everything after '#'.
-  var params = {};
-  var raw = (location.hash || '').replace(/^#/, '') + '&' + (location.search || '').replace(/^\?/, '');
-  raw.split('&').forEach(function (pair) {
-    var eq = pair.indexOf('=');
-    if (eq <= 0) return;
-    try {
-      params[decodeURIComponent(pair.slice(0, eq))] =
-        decodeURIComponent(pair.slice(eq + 1).replace(/\+/g, ' '));
-    } catch (e) { /* ignore malformed pair */ }
-  });
+  function render() {
+    // Supabase's implicit-flow recovery redirect puts everything after '#'.
+    var params = {};
+    var raw = (location.hash || '').replace(/^#/, '') + '&' + (location.search || '').replace(/^\?/, '');
+    raw.split('&').forEach(function (pair) {
+      var eq = pair.indexOf('=');
+      if (eq <= 0) return;
+      try {
+        params[decodeURIComponent(pair.slice(0, eq))] =
+          decodeURIComponent(pair.slice(eq + 1).replace(/\+/g, ' '));
+      } catch (e) { /* ignore malformed pair */ }
+    });
 
-  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    ['state-tokens', 'state-error', 'state-empty'].forEach(function (id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
 
-  if (params.error || params.error_description) {
-    var detail = params.error_description || 'The link is invalid or has expired.';
-    document.getElementById('error-detail').textContent =
-      detail + (detail.slice(-1) === '.' ? '' : '.');
-    show('state-error');
-  } else if (params.access_token && params.refresh_token) {
-    // Hand the fragment to the app verbatim. The visible button is the
-    // reliable path (user gesture); the automatic attempt is best-effort.
-    var appUrl = 'piptcg://reset-password' + location.hash;
-    document.getElementById('open-app').setAttribute('href', appUrl);
-    show('state-tokens');
-    setTimeout(function () { location.href = appUrl; }, 400);
-  } else {
-    show('state-empty');
+    if (params.error || params.error_description) {
+      var detail = params.error_description || 'The link is invalid or has expired.';
+      document.getElementById('error-detail').textContent =
+        detail + (detail.slice(-1) === '.' ? '' : '.');
+      show('state-error');
+    } else if (params.access_token && params.refresh_token) {
+      // Hand the fragment to the app verbatim. The visible button is the
+      // reliable path (user gesture); the automatic attempt is best-effort.
+      var appUrl = 'piptcg://reset-password' + location.hash;
+      document.getElementById('open-app').setAttribute('href', appUrl);
+      show('state-tokens');
+      setTimeout(function () { location.href = appUrl; }, 400);
+    } else {
+      show('state-empty');
+    }
   }
+
+  render();
+  // Tapping a second reset link can land in the SAME Safari tab as an
+  // earlier one; that's a fragment-only navigation (no page reload), so
+  // re-render on hashchange or the new link shows the old link's state.
+  window.addEventListener('hashchange', render);
 })();
 </script>
 </body>
