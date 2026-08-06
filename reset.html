@@ -43,10 +43,14 @@
     padding: 0.85rem 2.2rem;
     background: var(--accent);
     color: #fff;
+    border: none;
     border-radius: 12px;
+    font: inherit;
     font-weight: 600;
     text-decoration: none;
+    cursor: pointer;
   }
+  .button[disabled] { opacity: 0.55; }
   footer {
     max-width: 560px;
     margin: 2.5rem auto 0;
@@ -61,6 +65,14 @@
 </head>
 <body>
 <main>
+  <div id="state-verify" class="hidden">
+    <h1>Finish resetting your password</h1>
+    <p>Tap the button below to continue in PipTCG and choose a new password.</p>
+    <button id="continue" class="button" type="button">Continue in PipTCG</button>
+    <p id="verify-note" class="muted">Open this on the phone or tablet that has
+    PipTCG installed.</p>
+  </div>
+
   <div id="state-tokens" class="hidden">
     <h1>Finish resetting your password</h1>
     <p>Tap the button below to open PipTCG and choose a new password.</p>
@@ -89,46 +101,99 @@
 <footer>PipTCG &middot; <a href="support.html">Support</a></footer>
 <script>
 (function () {
-  function render() {
-    // Supabase's implicit-flow recovery redirect puts everything after '#'.
-    var params = {};
-    var raw = (location.hash || '').replace(/^#/, '') + '&' + (location.search || '').replace(/^\?/, '');
-    raw.split('&').forEach(function (pair) {
+  // These are the project's PUBLIC values — safe to ship in a static page.
+  var SUPABASE_URL = 'https://bzwtvhabbcivzichzxxp.supabase.co';
+  var ANON_KEY = 'sb_publishable_m3mXs7pohblWuxPBiLfwCw_1QSVTC9U';
+
+  function parse(str) {
+    var out = {};
+    (str || '').replace(/^[#?]/, '').split('&').forEach(function (pair) {
       var eq = pair.indexOf('=');
       if (eq <= 0) return;
       try {
-        params[decodeURIComponent(pair.slice(0, eq))] =
+        out[decodeURIComponent(pair.slice(0, eq))] =
           decodeURIComponent(pair.slice(eq + 1).replace(/\+/g, ' '));
       } catch (e) { /* ignore malformed pair */ }
     });
+    return out;
+  }
 
-    ['state-tokens', 'state-error', 'state-empty'].forEach(function (id) {
-      document.getElementById(id).classList.add('hidden');
-    });
-    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+  var els = {};
+  ['state-verify', 'state-tokens', 'state-error', 'state-empty'].forEach(function (id) {
+    els[id] = document.getElementById(id);
+  });
+  function show(id) {
+    for (var k in els) els[k].classList.add('hidden');
+    els[id].classList.remove('hidden');
+  }
+  function fail(msg) {
+    var d = document.getElementById('error-detail');
+    d.textContent = msg + (msg.slice(-1) === '.' ? '' : '.');
+    show('state-error');
+  }
+  function openApp(accessToken, refreshToken) {
+    var appUrl = 'piptcg://reset-password#access_token=' +
+      encodeURIComponent(accessToken) + '&refresh_token=' +
+      encodeURIComponent(refreshToken) + '&type=recovery';
+    els['state-verify'].classList.add('hidden');
+    document.getElementById('open-app').setAttribute('href', appUrl);
+    show('state-tokens');
+    location.href = appUrl;
+  }
 
-    if (params.error || params.error_description) {
-      var detail = params.error_description || 'The link is invalid or has expired.';
-      document.getElementById('error-detail').textContent =
-        detail + (detail.slice(-1) === '.' ? '' : '.');
-      show('state-error');
-    } else if (params.access_token && params.refresh_token) {
-      // Hand the fragment to the app verbatim. The visible button is the
-      // reliable path (user gesture); the automatic attempt is best-effort.
-      var appUrl = 'piptcg://reset-password' + location.hash;
-      document.getElementById('open-app').setAttribute('href', appUrl);
-      show('state-tokens');
-      setTimeout(function () { location.href = appUrl; }, 400);
+  function route() {
+    var q = parse(location.search);
+    var h = parse(location.hash);
+
+    // Primary path: token_hash in the query string. The email links straight
+    // here (a real file — no directory 301, no fragment for Gmail to strip,
+    // no Supabase redirect hop). We exchange it for a session on a button tap:
+    // the tap is a real user gesture, so mail-provider link scanners that
+    // prefetch the page can't consume the one-time token.
+    if (q.token_hash && q.type) {
+      show('state-verify');
+      var btn = document.getElementById('continue');
+      btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.textContent = 'Verifying…';
+        fetch(SUPABASE_URL + '/auth/v1/verify', {
+          method: 'POST',
+          headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: q.type, token_hash: q.token_hash }),
+        }).then(function (r) {
+          return r.json().then(function (body) { return { ok: r.ok, body: body }; });
+        }).then(function (res) {
+          if (res.ok && res.body.access_token && res.body.refresh_token) {
+            openApp(res.body.access_token, res.body.refresh_token);
+          } else {
+            fail(res.body.error_description || res.body.msg ||
+              'This reset link is invalid or has expired.');
+          }
+        }).catch(function () {
+          btn.disabled = false;
+          btn.textContent = 'Continue in PipTCG';
+          document.getElementById('verify-note').textContent =
+            'Network error — check your connection and tap Continue again.';
+        });
+      });
+      return;
+    }
+
+    // Legacy fallback: some in-flight links still arrive with the session in
+    // the URL fragment (implicit flow) or an error there.
+    if (h.error || h.error_description) {
+      fail(h.error_description || 'The link is invalid or has expired.');
+    } else if (h.access_token && h.refresh_token) {
+      openApp(h.access_token, h.refresh_token);
     } else {
       show('state-empty');
     }
   }
 
-  render();
-  // Tapping a second reset link can land in the SAME Safari tab as an
-  // earlier one; that's a fragment-only navigation (no page reload), so
-  // re-render on hashchange or the new link shows the old link's state.
-  window.addEventListener('hashchange', render);
+  route();
+  // A second reset link tapped into the same tab is a same-document nav; the
+  // page won't reload, so re-route on hash changes.
+  window.addEventListener('hashchange', route);
 })();
 </script>
 </body>
