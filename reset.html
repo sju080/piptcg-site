@@ -4,66 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PipTCG — Password Reset</title>
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="style.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  :root {
-    color-scheme: light dark;
-    --bg: #ffffff;
-    --fg: #1c1c1e;
-    --muted: #6e6e73;
-    --accent: #0a66c2;
-    --rule: #e5e5ea;
-    --error: #c0392b;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #131315;
-      --fg: #ececf1;
-      --muted: #9a9aa2;
-      --accent: #7ab8f5;
-      --rule: #2c2c31;
-      --error: #e07b6f;
-    }
-  }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    -webkit-text-size-adjust: 100%;
-  }
-  main { max-width: 560px; margin: 0 auto; padding: 3.5rem 1.25rem 1rem; text-align: center; }
-  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 0.75rem; }
-  p { margin: 0.65rem 0; }
-  .muted { color: var(--muted); font-size: 0.95rem; }
-  .error-title { color: var(--error); }
-  .button {
-    display: inline-block;
-    margin: 1.5rem 0 0.5rem;
-    padding: 0.85rem 2.2rem;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font: inherit;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-  }
+  .doc main { max-width: 560px; text-align: center; }
+  .button { display: inline-flex; align-items: center; justify-content: center; margin: 1.5rem 0 0.5rem; padding: 0.85rem 2.2rem; background: var(--accent); color: var(--on-accent); border: none; border-radius: 999px; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
   .button[disabled] { opacity: 0.55; }
-  footer {
-    max-width: 560px;
-    margin: 2.5rem auto 0;
-    padding: 1.5rem 1.25rem 3rem;
-    color: var(--muted);
-    font-size: 0.85rem;
-    border-top: 1px solid var(--rule);
-    text-align: center;
-  }
-  .hidden { display: none; }
 </style>
 </head>
-<body>
+<body class="doc">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="assets/favicon.png" alt="" width="30" height="30">PipTCG</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/#features">Features</a>
+      <a href="/#how">How it works</a>
+      <a href="/#safety">Safety</a>
+      <a href="support.html">Support</a>
+      <a class="btn btn-primary btn-sm" href="/#get">Get the app</a>
+    </nav>
+  </div>
+</header>
 <main>
   <div id="state-verify" class="hidden">
     <h1>Finish resetting your password</h1>
@@ -98,7 +62,21 @@
     <strong>Forgot Password</strong>.</p>
   </div>
 </main>
-<footer>PipTCG &middot; <a href="support.html">Support</a></footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="/"><img src="assets/favicon.png" alt="" width="30" height="30">PipTCG</a>
+      <p class="tag">The local marketplace and community for trading card collectors.</p>
+    </div>
+    <ul>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms of Service</a></li>
+      <li><a href="mailto:support@piptcg.com">support@piptcg.com</a></li>
+    </ul>
+    <p class="legal">&copy; 2026 PipTCG. For collectors 18 and up.</p>
+  </div>
+</footer>
 <script>
 (function () {
   // These are the project's PUBLIC values — safe to ship in a static page.

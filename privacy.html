@@ -4,54 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PipTCG — Privacy Policy</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  :root {
-    color-scheme: light dark;
-    --bg: #ffffff;
-    --fg: #1c1c1e;
-    --muted: #6e6e73;
-    --accent: #0a66c2;
-    --rule: #e5e5ea;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #131315;
-      --fg: #ececf1;
-      --muted: #9a9aa2;
-      --accent: #7ab8f5;
-      --rule: #2c2c31;
-    }
-  }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    -webkit-text-size-adjust: 100%;
-  }
-  main { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.25rem 1rem; }
-  nav.home { max-width: 720px; margin: 0 auto; padding: 1.25rem 1.25rem 0; font-size: 0.95rem; }
-  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 0.35rem; }
-  .updated { color: var(--muted); font-size: 0.9rem; margin: 0 0 2rem; }
-  h2 { font-size: 1.25rem; line-height: 1.3; margin: 2.2rem 0 0.6rem; }
-  h3 { font-size: 1.05rem; margin: 1.4rem 0 0.4rem; }
-  p { margin: 0.65rem 0; }
-  ul { margin: 0.65rem 0; padding-left: 1.4rem; }
-  li { margin: 0.3rem 0; }
-  a { color: var(--accent); }
-  footer {
-    max-width: 720px;
-    margin: 2.5rem auto 0;
-    padding: 1.5rem 1.25rem 3rem;
-    color: var(--muted);
-    font-size: 0.85rem;
-    border-top: 1px solid var(--rule);
-  }
-</style>
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-<nav class="home"><a href="index.html">&larr; PipTCG</a></nav>
+<body class="doc">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="assets/favicon.png" alt="" width="30" height="30">PipTCG</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/#features">Features</a>
+      <a href="/#how">How it works</a>
+      <a href="/#safety">Safety</a>
+      <a href="support.html">Support</a>
+      <a class="btn btn-primary btn-sm" href="/#get">Get the app</a>
+    </nav>
+  </div>
+</header>
 <main>
   <h1>Privacy Policy</h1>
   <p class="updated">Last Updated: September 17, 2026</p>
@@ -156,6 +127,20 @@
   <p>Email: <a href="mailto:support@piptcg.com">support@piptcg.com</a><br>In the app: Settings → Help &amp; Support<br>Mail: <strong>Sibo Ju</strong>, <strong>7202 Lugary Dr, Houston, TX 77036</strong></p>
 
 </main>
-<footer>&copy; 2026 PipTCG &middot; Last updated September 17, 2026</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="/"><img src="assets/favicon.png" alt="" width="30" height="30">PipTCG</a>
+      <p class="tag">The local marketplace and community for trading card collectors.</p>
+    </div>
+    <ul>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms of Service</a></li>
+      <li><a href="mailto:support@piptcg.com">support@piptcg.com</a></li>
+    </ul>
+    <p class="legal">&copy; 2026 PipTCG. For collectors 18 and up. Last updated September 17, 2026.</p>
+  </div>
+</footer>
 </body>
 </html>
